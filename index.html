@@ -93,7 +93,7 @@
                 countDiv.textContent = `تعداد برخورد: ${++count}`;
             }
 
-            if (positiony > window.innerHeight - 50) {
+            if (!checkCollision() && positiony >= window.innerHeight - 50) {
                 message.textContent = '❌ باختید';
                 message.style.display = 'block';
                 document.querySelector('.start-overlay').style.display = 'flex'
