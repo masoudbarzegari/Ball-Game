@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+    }
+
+    .start-overlay {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        pointer-events: none;
+    }
+
+    .start-btn {
+        pointer-events: auto;
+        padding: 12px 20px;
+        background: beige;
+        color: #000;
+        border-radius: 12px;
+        height: 119px;
+        font-size: 2rem;
+        font-family: revert-layer;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+
+<body>
+    <div class="start-overlay">
+        <input class="start-btn" type="button" value="Start Game">
+    </div>
+    <img id="ball" src="C:\Users\masou\Desktop\projrct\Soccerball.svg.png"
+        style="position: absolute; left: 0px; top: 0px; width: 50px; height: 50px;">
+    <div id="cursor" style="position: absolute; bottom: 0; width: 10rem; height: 10px; background-color: rgb(6, 6, 6);">
+    </div>
+    <div id="message"
+        style="position: absolute; bottom:20% ;; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; font-weight: bold; display: none;">
+    </div>
+</body>
+
+</html>
+<script>
+    const startBtn = document.querySelector('.start-btn');
+    startBtn.onclick = function () {
+        document.querySelector('.start-overlay').style.display = 'none'
+       document.querySelector('#message').style.display='none'
+        const ball = document.getElementById('ball');
+        const cursor = document.getElementById('cursor');
+        const message = document.getElementById('message');
+        let positionx = 0;
+        let directionx = 1;
+        let positiony = 0;
+        let directiony = 1;
+        let cursorX = 0;
+        let count = 0;
+        const countDiv = document.createElement('div');
+        countDiv.style.top = '10px';
+        countDiv.style.left = '10px';
+        document.body.appendChild(countDiv);
+        countDiv.style.position = 'absolute';
+        let gameActive = true;
+
+        function checkCollision() {
+            // بررسی برخورد توپ با div
+            return positionx < cursorX + 80 &&
+                positionx + 50 > cursorX - 80 &&
+                positiony + 50 >= window.innerHeight - 10;
+        }
+
+
+        function animate() {
+            if (!gameActive) return;
+
+            positionx += directionx * 5;
+            positiony += directiony * 5;
+            ball.style.transform = 'translate3d(' + positionx + 'px, ' + positiony + 'px, 0)';
+
+            // برخورد توپ با div
+            if (checkCollision()) {
+                directiony *= -1;
+                countDiv.textContent = `تعداد برخورد: ${++count}`;
+            }
+
+            if (positiony > window.innerHeight - 50) {
+                message.textContent = '❌ باختید';
+                message.style.display = 'block';
+                document.querySelector('.start-overlay').style.display = 'flex'
+                document.body.removeChild(countDiv);
+                gameActive = false;
+                return;
+            }
+
+            if (positionx >= window.innerWidth - 50 || positionx <= 0) {
+                directionx *= -1;
+            }
+            if (positiony >= window.innerHeight - 50 || positiony <= 0) {
+                directiony *= -1;
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        document.addEventListener('mousemove', (event) => {
+            cursorX = event.clientX;
+            cursor.style.transform = `translate3d(${cursorX - 80}px, 0, 0)`;
+        });
+
+        animate();
+    }
+</script>
